@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <string>W
+#include <string>
 #include <vector>
 #include <algorithm>
 #include <sstream>
@@ -15,10 +15,16 @@ using namespace std;
 //https://stackoverflow.com/questions/3613284/c-stdstring-to-boolean
 bool to_bool(std::string str) {
     std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-    std::istringstream is(str);
-    bool b;
-    is >> std::boolalpha >> b;
-    return b;
+
+    string n;
+    for (int i = 0; i < 2; i++) {
+        n += str[i];
+    }
+    if (n == "no") {
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -31,6 +37,10 @@ bool train_can_be_sorted(const vector<int> &permutationed_received){
     int k=0;
 
     for (int i = 0; i <arriving_coaches_array.size(); i++) {
+        while (!train_station_stack.empty() && train_station_stack.top() == permutationed_received[k]) {
+            train_station_stack.pop();
+            k++;
+        }
         if (arriving_coaches_array[i] == permutationed_received[k]) {
             train_station_stack.push(arriving_coaches_array[i]);
             train_station_stack.pop();
@@ -60,17 +70,17 @@ bool train_can_be_sorted(const vector<int> &permutationed_received){
 
 int main(){
 
-
     //read file and then according sort
     ifstream f("lab1in.txt");
-
     if (!f.is_open())
     {
         cerr << "Error opening input file";
         return 1;
     }
-
-    // Read from the text file
+    else {
+        cout << "File successfully opened"<<endl;
+    }
+    
     string current_line;
 
     int line_count = 1;
@@ -82,6 +92,9 @@ int main(){
     while (getline (f, current_line)) {
         if(block_size == 0 || current_line.length() == 1)
         {
+            if (stoi(current_line) == 0) {
+                return -1;
+            }
             block_size = stoi(current_line);
             line_count +=1;
             continue;
@@ -94,20 +107,15 @@ int main(){
             int block_pointer = 0;
             int char_pointer = 0;
 
-
-            // int number_of_tests = 0;
             while(block_pointer < block_size)
             {
 
-                if (current_line[char_pointer] == '0')
-                {
-                    return -1;
-                }
-
                 if (current_line[char_pointer] == ' '){
 
-                    parsed_value = std::stoi(current_line);
-                    received_vec[block_pointer] = parsed_value;
+                    parsed_value = std::stoi(new_int);
+                    // cout<< "parsed value is: " << parsed_value << endl;
+                    received_vec.push_back(parsed_value);
+                    // received_vec[block_pointer] = parsed_value;
                     new_int = "";
                     block_pointer +=1;
 
@@ -139,13 +147,29 @@ int main(){
 
                 }
                 bool expected_response = to_bool(current_outf_line);
-
-                cout << "Expected response: " << expected_response <<"Actual response: "<< can_be_sorted <<endl;
+                string expected_response_str;
+                string actual_response_str;
+                if (expected_response == 0) {
+                    expected_response_str = "false";
+                }
+                else {
+                    expected_response_str = "true";
+                }
+                if (can_be_sorted == 0) {
+                    actual_response_str = "false";
+                }
+                else {
+                    actual_response_str = "true";
+                }
+                cout << "Expected response: " << expected_response_str <<", Actual response: "<< actual_response_str <<endl;
 
                 if (expected_response == can_be_sorted) {
                     number_of_tests_passed++;
                 }
                 desired_outf_line_number++;
+
+                received_vec.clear();
+                //todo remove pointer memory here
 
             }
 
