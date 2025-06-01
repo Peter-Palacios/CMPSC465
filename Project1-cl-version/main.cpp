@@ -80,23 +80,24 @@ int main(){
     else {
         cout << "File successfully opened"<<endl;
     }
-    
+
     string current_line;
 
     int line_count = 1;
     int block_size = 0;
     vector<int> received_vec;
 
-    int desired_outf_line_number = 1;
+    int desired_outf_line_number = 0;
     int number_of_tests_passed = 0;
     while (getline (f, current_line)) {
-        if(block_size == 0 || current_line.length() == 1)
+        if(block_size == 0 && current_line != "0\r")
         {
-            if (stoi(current_line) == 0) {
-                return -1;
-            }
             block_size = stoi(current_line);
             line_count +=1;
+            continue;
+        }
+        else if (current_line == "0\r"){
+            block_size = 0;
             continue;
         }
         else
@@ -136,6 +137,7 @@ int main(){
                 ifstream outf("lab1out-1.txt");
 
                 int current_outf_line_number = 0;
+                desired_outf_line_number++;
                 while (!outf.eof())
                 {
                     current_outf_line_number++;
@@ -166,7 +168,7 @@ int main(){
                 if (expected_response == can_be_sorted) {
                     number_of_tests_passed++;
                 }
-                desired_outf_line_number++;
+
 
                 received_vec.clear();
                 //todo remove pointer memory here
@@ -181,44 +183,3 @@ int main(){
 
     return 0;
 }
-
-
-    // sort ascending
-    // std::sort( start_iterator, end_iterator, bool compare() );
-
-    // So for an array of int --
-    // //sort ascending
-    // std::sort( A.begin() , A.end(),  std::less<int>() );
-
-    // // sort descending
-    // std::sort( A.begin() , A.end(),  std::greater<int>() );
-
-    // // sort with lambda function
-    // std::sort( A.begin() , A.end(),
-    //            [](int a, int b) { return a < b;  }
-
-
-            //this part should be recursive until the end of the file
-
-            // for (int i = 0; i < current_line.length(); i++) {
-            //     //search each char
-            //     if (current_line[i] == '0')
-            //     {
-            //         return -1;
-            //     }
-
-            //     if (current_line[i] == ' '){
-
-            //         parsed_value = std::stoi(new_int);
-            //         // received_array.Add(parsed_value);
-            //         received_vec[i] = parsed_value;
-            //         // received_array[i]->Add(parsed_value);
-            //         new_int = "";
-
-            //     }
-            //     else
-            //     {
-            //         new_int += current_line[i];
-            //     }
-
-            // }
